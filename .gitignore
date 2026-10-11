@@ -1,0 +1,19 @@
+# Python
+.venv/
+__pycache__/
+*.pyc
+
+# Credentials and secrets
+.env
+.df-credentials.json
+*credentials*.json
+
+# Dataform CLI
+node_modules/
+
+# Editor / OS
+.vscode/
+Thumbs.db
+
+# Personal study notes
+docs/estudos/
