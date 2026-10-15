@@ -22,10 +22,11 @@ Google Merchandise Store de 01/11/2020 a 31/01/2021.
 
 ## Fase 2 — Entender os dados
 
-- [ ] Ler o schema pela aba *Esquema* do console (grátis): `event_params`, `user_properties`,
-      `items`, `traffic_source`, `device`, `geo`, `ecommerce`
+- [x] Ler o schema (grátis): `event_params`, `user_properties`, `items`, `traffic_source`,
+      `device`, `geo`, `ecommerce`. Feito pelo Python em `notebooks/01_explore_ga4.ipynb`
 - [ ] Dry run do período inteiro com as colunas que vamos usar e anotar o tamanho
-- [ ] Listar os `event_name` e a contagem de cada um (base do funil)
+- [x] Listar os `event_name` e a contagem de cada um (base do funil): 17 eventos, 53,4 MiB
+      para os 92 dias
 - [ ] Mapear as chaves de `event_params` que interessam (`ga_session_id`, `page_location`,
       `source`, `medium`, `campaign` etc.)
 - [ ] Dicionário de dados em `docs/dicionario-dados.md`

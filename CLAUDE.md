@@ -78,6 +78,10 @@ Decisões técnicas já tomadas:
 - **Explicar o porquê quando o conceito for novo.** Comando eu copio, mas conceito eu preciso
   entender para repetir sozinho depois. Quando eu disser que não entendi um termo, explicar
   sem jargão.
+- **Quando eu pedir para ensinar: explicação simples, com analogia do dia a dia** (ex.: API
+  é o garçom que leva o pedido do cliente à cozinha e traz o prato). Termo técnico vem
+  desmembrado: o que é, para que serve, exemplo. Material de estudo vai para
+  `docs/estudos/` em `.md`, um arquivo por fase.
 - **Antes de sugerir uma query**, estimar se ela cabe no sandbox e informar a ordem de
   grandeza esperada.
 - **Não inventar estado.** Se não souber se algo já foi feito, perguntar.
@@ -160,6 +164,9 @@ com faturamento ativo.
   Python 3.11 de lá.
 - **O `python` do PATH é o Anaconda 3.9 (sem suporte desde out/2025).** O venv do projeto
   usa o Python 3.14 instalado pelo `uv`: `py -V:Astral/CPython3.14.7 -m venv .venv`.
+- **`gh` logado não basta para o `git push`.** O primeiro push falhou com `could not read
+  Username`. Resolvido com `gh auth setup-git`, que faz o Git usar o login do `gh`.
+  Configuração global, feita uma vez por máquina.
 - **PATH só atualiza depois de reiniciar o VS Code inteiro.** Abrir terminal novo não basta,
   porque ele herda o ambiente do processo do VS Code. Paliativo para a sessão atual:
   `$env:Path = [Environment]::GetEnvironmentVariable('Path','Machine') + ';' + [Environment]::GetEnvironmentVariable('Path','User')`
@@ -217,7 +224,30 @@ com faturamento ativo.
 - `docs/estudos/` (inclusive o `setup-bigquery.md`) fica fora do Git **por decisão do Dante**:
   é material de estudo pessoal.
 
-**Próximo passo:** Fase 2 do roadmap (entender os dados).
+- Material de estudo da Fase 2 criado: `docs/estudos/fase-2-entender-dados.md`.
+- `CLAUDE.md` tem alterações **sem commit** desde o primeiro push.
+
+**Próximo passo:** o Dante lê as seções 1 a 4 do material da Fase 2 e escreve ele mesmo o
+`scripts/show_schema.py` (Passo 1 da seção 5). Depois: dry run do período inteiro.
+
+### 14/10/2026 — Fase 2, exploração
+
+- Exploração em notebook (`ipykernel` no venv). Pasta `notebooks/`: `show_schemas.ipynb` é
+  **referência intocável** do schema (pedido do Dante); a exploração segue em
+  `01_explore_ga4.ipynb`.
+- Decidido: variáveis em inglês e comentários em português. Colunas do GA4 mantêm o nome
+  original na staging; a tradução vai para o dicionário e para o Power BI.
+- Schema lido com os subcampos dos RECORD. `list_rows` usado para ver linhas de graça.
+- Contagem por `event_name`: 17 eventos, **53,4 MiB** para o período. Total lido na sessão:
+  cerca de 70 MiB.
+- Taxonomia de eventos esboçada (automáticos, visualização, clique e funil de compra). Vai
+  para o dicionário.
+- Limitação achada: `view_item_list` tem 71 eventos contra 31.007 `select_item`, então não
+  dá para calcular o clique em listas.
+- O VS Code não estava salvando o notebook: recomendado ativar o Auto Save.
+
+**Próximo passo:** corrigir o filtro da query (está `'20200101'`, o certo é `'20201101'`).
+Depois: mapear as chaves de `event_params` (Passo 4 da seção 5).
 
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:
