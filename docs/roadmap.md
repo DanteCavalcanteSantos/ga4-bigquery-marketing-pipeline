@@ -27,9 +27,9 @@ Google Merchandise Store de 01/11/2020 a 31/01/2021.
 - [ ] Dry run do período inteiro com as colunas que vamos usar e anotar o tamanho
 - [x] Listar os `event_name` e a contagem de cada um (base do funil): 17 eventos, 53,4 MiB
       para os 92 dias
-- [ ] Mapear as chaves de `event_params` que interessam (`ga_session_id`, `page_location`,
-      `source`, `medium`, `campaign` etc.)
-- [ ] Dicionário de dados em `docs/dicionario-dados.md`
+- [x] Mapear as chaves de `event_params` que interessam (`ga_session_id`, `page_location`,
+      `source`, `medium`, `campaign` etc.): 34 etiquetas, 16 escolhidas, 1,31 GiB
+- [ ] Dicionário de dados em `docs/dicionario-dados.md` (rascunho criado em 26/10)
 - [ ] Anotar as limitações do dataset (ofuscação, valores `<Other>`, `(data deleted)`)
 
 ## Fase 3 — Perguntas de negócio

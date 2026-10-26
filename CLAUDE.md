@@ -249,6 +249,29 @@ com faturamento ativo.
 **Próximo passo:** corrigir o filtro da query (está `'20200101'`, o certo é `'20201101'`).
 Depois: mapear as chaves de `event_params` (Passo 4 da seção 5).
 
+### 26/10/2026
+
+- Material da biblioteca `google-cloud-bigquery` criado: seção 6 do
+  `docs/estudos/fase-2-entender-dados.md`. O Dante preferiu seguir explorando em Python,
+  aprendendo a biblioteca aos poucos.
+- `gcloud auth login` rodado por hábito da Galeria. Não atrapalha, mas o Python usa a ADC.
+- Filtro da query de `event_name` corrigido para `'20201101'`.
+- `list_tables`: 92 tabelas, de `events_20201101` a `events_20210131` (date-sharded).
+- Contagem das etiquetas de `event_params` com `UNNEST`: 34 etiquetas, **1,31 GiB** (a query
+  mais cara até agora; não re-rodar à toa). Resultado na variável `df_params` do notebook.
+- Uma ficha real vista com `list_rows` (grátis): um `page_view` com 12 etiquetas.
+- Dúvidas do Dante esclarecidas: `event_params` é uma coluna, não o dataset; o GitHub guarda só
+  o código (`.sqlx`), e as tabelas de staging e marts ficam no BigQuery; a estrutura do
+  `dataform/definitions/` espelha os datasets.
+- `docs/dicionario-dados.md` criado (rascunho): eventos agrupados, 16 etiquetas escolhidas
+  (aprovadas pelo Dante), descartadas, impressão de banner (`view_promotion` e
+  `select_promotion`, dados em `items`) e limitações.
+- Impressão de anúncio não existe no GA4 (vem do Ads ou do DV360). O que existe é impressão de
+  banner interno.
+
+**Próximo passo:** conferir as etiquetas das linhas 24 a 29 do `df_params.to_string()` e
+completar o dicionário. Depois: dry run das colunas da staging e o item de limitações.
+
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:
 
