@@ -1,0 +1,11 @@
+dataformCoreVersion: 3.1.2
+defaultProject: portfolio-marketing-digital
+defaultLocation: US
+defaultDataset: staging
+defaultAssertionDataset: assertions
+
+vars:
+  source_project: bigquery-public-data
+  source_dataset: ga4_obfuscated_sample_ecommerce
+  start_date: "20201101"
+  end_date: "20210131"

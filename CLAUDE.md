@@ -304,7 +304,19 @@ completar o dicionário. Depois: dry run das colunas da staging e o item de limi
 - Limpeza, tipagem, nulos e outliers: na Fase 5 (perfil da `stg_events`, item novo no
   roadmap) e nas assertions da Fase 6.
 
-**Próximo passo:** Fase 4, instalar o Dataform CLI e criar o projeto em `dataform/`.
+- **Fase 4 (setup):** Dataform CLI 3.1.2 instalado (aviso `install-scripts` do npm 12 sobre
+  `protobufjs`; reinstalar com `--allow-scripts=protobufjs` se o compile reclamar).
+  `dataform init dataform portfolio-marketing-digital US`. `workflow_settings.yaml` com
+  `defaultDataset: staging`, `defaultAssertionDataset: assertions` e `vars` (`source_project`,
+  `source_dataset`, `start_date`, `end_date`).
+- `init-creds` com ADC: o `projectId` saiu vazio (Enter sem digitar) e foi corrigido à mão no
+  `.df-credentials.json`. O arquivo está no `dataform/.gitignore`.
+- Passo a passo da Fase 4 em `docs/estudos/fase-4-dataform.md`.
+
+**Próximo passo:** declarar a fonte GA4 (`type: "declaration"`, usando as `vars`), rodar o
+primeiro `dataform compile` (grátis) e depois uma view simples com `dataform run`. Conferir
+antes se `dataform.projectConfig.vars` funciona no bloco `config` do `.sqlx`; senão, declarar
+num arquivo `.js`.
 
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:

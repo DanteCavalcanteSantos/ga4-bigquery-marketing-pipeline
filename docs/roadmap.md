@@ -49,10 +49,10 @@ Definir **o que** o dashboard responde antes de modelar.
 
 ## Fase 4 — Dataform: setup
 
-- [ ] `npm i -g @dataform/cli` e conferir com `dataform --version`
-- [ ] Decidir a estrutura: projeto Dataform na pasta `dataform/` deste repositório
-- [ ] `dataform init` e configurar o `workflow_settings.yaml` (projeto, dataset e localização `US`)
-- [ ] `.df-credentials.json` via `dataform init-creds` (já está no `.gitignore`)
+- [x] `npm i -g @dataform/cli` e conferir com `dataform --version` (3.1.2)
+- [x] Decidir a estrutura: projeto Dataform na pasta `dataform/` deste repositório
+- [x] `dataform init` e configurar o `workflow_settings.yaml` (projeto, dataset e localização `US`)
+- [x] `.df-credentials.json` via `dataform init-creds` (já está no `.gitignore`)
 - [ ] Primeiro `dataform compile` e `dataform run` com uma view simples
 
 ## Fase 5 — Camada staging
