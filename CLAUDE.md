@@ -82,6 +82,14 @@ Decisões técnicas já tomadas:
   é o garçom que leva o pedido do cliente à cozinha e traz o prato). Termo técnico vem
   desmembrado: o que é, para que serve, exemplo. Material de estudo vai para
   `docs/estudos/` em `.md`, um arquivo por fase.
+- **O projeto é de aprendizado.** Explicar tudo de forma simples, com analogia quando ajudar.
+  O objetivo é o Dante **entender**, não só ter o código pronto. Mostrar dado real (colunas e
+  valores) sempre que possível, para ele ter dimensão do que está manipulando.
+- **Vocabulário fixo, uma analogia por conceito:** gaveta = tabela de um dia; caixa com
+  divisórias = `RECORD`; lista = `REPEATED`; etiqueta = `key` do `event_params`; tipo do valor =
+  `string_value`/`int_value`/etc. Não reutilizar a mesma palavra para coisas diferentes.
+- **Camadas:** bronze = `events_*`, prata = `staging`, ouro = `marts`. Os nomes no código
+  seguem `staging`/`marts` (padrão Dataform/dbt). O medallion é só a equivalência no README.
 - **Antes de sugerir uma query**, estimar se ela cabe no sandbox e informar a ordem de
   grandeza esperada.
 - **Não inventar estado.** Se não souber se algo já foi feito, perguntar.
@@ -271,6 +279,32 @@ Depois: mapear as chaves de `event_params` (Passo 4 da seção 5).
 
 **Próximo passo:** conferir as etiquetas das linhas 24 a 29 do `df_params.to_string()` e
 completar o dicionário. Depois: dry run das colunas da staging e o item de limitações.
+
+### 28/10/2026 — Fase 2 concluída
+
+- ADC continua válida; nenhuma autenticação necessária.
+- Linhas 24 a 29 das etiquetas lidas: `shipping_tier` e `coupon` entram; `value`, `tax` e
+  `transaction_id` têm tipo misto e são trocadas pelas colunas de `ecommerce`.
+- Vocabulário fixo combinado (gaveta, caixa, etiqueta, tipo do valor) e registrado em
+  *Como trabalhar comigo*. Material de estudo ajustado.
+- `docs/camadas.md`: um evento real atravessando bronze → prata → ouro.
+- Dry run do rascunho da `stg_events`: **1,68 GiB** por execução, conferido pelo Dante no
+  notebook. Seção 7 do material de estudo explica a query linha a linha.
+- Dicionário completo: colunas usadas, `items`, moeda (usar as colunas sem `_in_usd`) e
+  limitações medidas (query de 315 MiB rodada pelo Claude): `<Other>` + `(data deleted)` em
+  ~33% da origem, `(not set)` em 42% das cidades, `Web` em 58% do SO, autorreferência da loja.
+- Pastas de camadas: só na Fase 4, dentro do projeto Dataform.
+- Consumo do mês até aqui: cerca de 1,8 GiB.
+
+- **Fase 3 concluída:** `docs/perguntas-negocio.md` com 7 perguntas (o Dante acrescentou o
+  total de conversões) e os KPIs com fórmula. Escopo: **pós-clique**. CPC, CPM e CPV
+  precisam de dado de mídia e ficam para um projeto futuro de benchmark.
+- KPIs não aditivos (usuários, sessões distintas, taxa) definem o grão das marts; não dá para
+  deixar tudo para o DAX.
+- Limpeza, tipagem, nulos e outliers: na Fase 5 (perfil da `stg_events`, item novo no
+  roadmap) e nas assertions da Fase 6.
+
+**Próximo passo:** Fase 4, instalar o Dataform CLI e criar o projeto em `dataform/`.
 
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:

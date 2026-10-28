@@ -24,26 +24,27 @@ Google Merchandise Store de 01/11/2020 a 31/01/2021.
 
 - [x] Ler o schema (grátis): `event_params`, `user_properties`, `items`, `traffic_source`,
       `device`, `geo`, `ecommerce`. Feito pelo Python em `notebooks/01_explore_ga4.ipynb`
-- [ ] Dry run do período inteiro com as colunas que vamos usar e anotar o tamanho
+- [x] Dry run do período inteiro com as colunas que vamos usar e anotar o tamanho: rascunho da
+      `stg_events` = 1,68 GiB por execução (~1,3 GiB só do `event_params`)
 - [x] Listar os `event_name` e a contagem de cada um (base do funil): 17 eventos, 53,4 MiB
       para os 92 dias
 - [x] Mapear as chaves de `event_params` que interessam (`ga_session_id`, `page_location`,
       `source`, `medium`, `campaign` etc.): 34 etiquetas, 16 escolhidas, 1,31 GiB
-- [ ] Dicionário de dados em `docs/dicionario-dados.md` (rascunho criado em 26/10)
-- [ ] Anotar as limitações do dataset (ofuscação, valores `<Other>`, `(data deleted)`)
+- [x] Dicionário de dados em `docs/dicionario-dados.md`
+- [x] Anotar as limitações do dataset (ofuscação, valores `<Other>`, `(data deleted)`)
 
 ## Fase 3 — Perguntas de negócio
 
 Definir **o que** o dashboard responde antes de modelar.
 
-- [ ] Escrever as perguntas em `docs/perguntas-negocio.md`. Ponto de partida:
+- [x] Escrever as perguntas em `docs/perguntas-negocio.md`. Ponto de partida:
   - Quais canais (source/medium) trazem mais sessões, conversões e receita?
   - Onde o funil vaza? (`view_item` → `add_to_cart` → `begin_checkout` → `purchase`)
   - Quais produtos e categorias vendem mais? Quais são vistos mas não comprados?
   - Desktop × mobile: a conversão muda?
   - Quais países geram mais receita?
   - Usuários novos × recorrentes, e retenção por coorte de primeira visita
-- [ ] Definir os KPIs com a fórmula de cada um: sessões, usuários, taxa de conversão, receita,
+- [x] Definir os KPIs com a fórmula de cada um: sessões, usuários, taxa de conversão, receita,
       ticket médio, receita por sessão
 
 ## Fase 4 — Dataform: setup
@@ -62,6 +63,8 @@ Limpar e achatar o dado bruto, sem regra de negócio. Uma linha por evento.
 - [ ] `stg_events`: colunas tipadas, `event_params` extraídos, `event_timestamp` em datetime
 - [ ] `stg_items`: `UNNEST(items)`, uma linha por item por evento
 - [ ] Dry run de cada model antes de rodar
+- [ ] Perfil da `stg_events` (lendo a staging, não a bronze): nulos por coluna, tipos, valores
+      fora do padrão e outliers de receita e quantidade
 
 ## Fase 6 — Camada marts
 
