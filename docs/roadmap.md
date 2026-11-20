@@ -53,7 +53,8 @@ Definir **o que** o dashboard responde antes de modelar.
 - [x] Decidir a estrutura: projeto Dataform na pasta `dataform/` deste repositório
 - [x] `dataform init` e configurar o `workflow_settings.yaml` (projeto, dataset e localização `US`)
 - [x] `.df-credentials.json` via `dataform init-creds` (já está no `.gitignore`)
-- [ ] Primeiro `dataform compile` e `dataform run` com uma view simples
+- [x] Primeiro `dataform compile` e `dataform run` com uma view simples (`staging.test_source`,
+      20/11/2026)
 
 ## Fase 5 — Camada staging
 
