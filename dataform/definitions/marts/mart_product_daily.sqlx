@@ -1,0 +1,37 @@
+config {
+  type: "table",
+  schema: "marts",
+  description: "Funil por produto e dia: visualizações, carrinho, checkout e compras",
+  tags: ["marts"],
+  assertions: {
+    uniqueKey: ["event_date", "item_id"],
+    nonNull: ["event_date", "item_id"]
+  }
+}
+
+-- Compras com o mesmo transaction_id + usuário disparadas mais de uma vez: fica só o primeiro
+-- disparo (mesma regra da fct_purchases). Compras sem ID não têm como ser deduplicadas.
+
+WITH items AS (
+  SELECT *
+  FROM ${ref("stg_items")}
+  WHERE item_id IS NOT NULL
+  QUALIFY
+    event_name != 'purchase'
+    OR transaction_id IS NULL
+    OR transaction_id = '(not set)'
+    OR event_datetime = MIN(event_datetime) OVER (PARTITION BY transaction_id, user_pseudo_id)
+)
+
+SELECT
+  event_date,
+  item_id,
+  ANY_VALUE(item_name) AS item_name,
+  ANY_VALUE(item_category) AS item_category,
+  COUNTIF(event_name = 'view_item') AS item_views,
+  COUNTIF(event_name = 'add_to_cart') AS add_to_carts,
+  COUNTIF(event_name = 'begin_checkout') AS checkouts,
+  SUM(IF(event_name = 'purchase', quantity, 0)) AS units_purchased,
+  SUM(IF(event_name = 'purchase', item_revenue, 0)) AS item_revenue
+FROM items
+GROUP BY event_date, item_id

@@ -1,0 +1,90 @@
+config {
+  type: "table",
+  schema: "marts",
+  description: "Uma linha por sessão (visita): canal, dispositivo, país, etapas do funil e receita",
+  tags: ["marts"],
+  assertions: {
+    uniqueKey: ["session_key"],
+    nonNull: ["session_key", "user_pseudo_id", "session_date", "channel"]
+  }
+}
+
+WITH events AS (
+  SELECT
+    *,
+    CONCAT(user_pseudo_id, '-', CAST(ga_session_id AS STRING)) AS session_key
+  FROM ${ref("stg_events")}
+),
+
+sessions AS (
+  SELECT
+    session_key,
+    ANY_VALUE(user_pseudo_id) AS user_pseudo_id,
+    ANY_VALUE(ga_session_id) AS ga_session_id,
+    MIN(event_date) AS session_date,
+    MIN(event_datetime) AS session_start,
+    MAX(ga_session_number) AS session_number,
+
+    -- Origem da sessão: o primeiro valor preenchido, em ordem de tempo
+    ARRAY_AGG(session_source IGNORE NULLS ORDER BY event_datetime LIMIT 1)[SAFE_OFFSET(0)] AS session_source,
+    ARRAY_AGG(session_medium IGNORE NULLS ORDER BY event_datetime LIMIT 1)[SAFE_OFFSET(0)] AS session_medium,
+    ARRAY_AGG(session_campaign IGNORE NULLS ORDER BY event_datetime LIMIT 1)[SAFE_OFFSET(0)] AS session_campaign,
+
+    -- Página de entrada
+    ARRAY_AGG(IF(entrances = 1, page_location, NULL) IGNORE NULLS ORDER BY event_datetime LIMIT 1)[SAFE_OFFSET(0)] AS landing_page,
+
+    -- Dispositivo e local (fixos na sessão)
+    ANY_VALUE(device_category) AS device_category,
+    ANY_VALUE(browser) AS browser,
+    ANY_VALUE(country) AS country,
+
+    -- Comportamento
+    COUNTIF(event_name = 'page_view') AS pageviews,
+    MAX(COALESCE(session_engaged, 0)) = 1 AS is_engaged,
+    SUM(COALESCE(engagement_time_msec, 0)) / 1000 AS engagement_time_sec,
+
+    -- Funil: a sessão passou pela etapa?
+    COUNTIF(event_name = 'view_item') > 0 AS has_view_item,
+    COUNTIF(event_name = 'add_to_cart') > 0 AS has_add_to_cart,
+    COUNTIF(event_name = 'begin_checkout') > 0 AS has_begin_checkout,
+    COUNTIF(event_name = 'purchase') > 0 AS has_purchase
+  FROM events
+  GROUP BY session_key
+),
+
+revenue AS (
+  SELECT
+    session_key,
+    COUNT(*) AS transactions,
+    SUM(revenue) AS revenue
+  FROM ${ref("fct_purchases")}
+  GROUP BY session_key
+)
+
+SELECT
+  s.session_key,
+  s.user_pseudo_id,
+  s.ga_session_id,
+  s.session_date,  -- event_date do GA4 (fuso da propriedade), igual à fct_purchases
+  s.session_start,
+  s.session_number,
+  s.session_number = 1 AS is_new_user,
+  COALESCE(s.session_source, '(not set)') AS session_source,
+  COALESCE(s.session_medium, '(not set)') AS session_medium,
+  COALESCE(s.session_campaign, '(not set)') AS session_campaign,
+  ${channels.channelGroup("s.session_medium")} AS channel,
+  s.landing_page,
+  s.device_category,
+  s.browser,
+  s.country,
+  s.pageviews,
+  s.is_engaged,
+  s.engagement_time_sec,
+  s.has_view_item,
+  s.has_add_to_cart,
+  s.has_begin_checkout,
+  s.has_purchase,
+  COALESCE(r.transactions, 0) AS transactions,
+  COALESCE(r.revenue, 0) AS revenue
+FROM sessions AS s
+LEFT JOIN revenue AS r USING (session_key)

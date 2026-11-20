@@ -1,0 +1,47 @@
+config {
+  type: "table",
+  schema: "marts",
+  description: "Retenção por coorte semanal de primeira visita: usuários ativos em cada semana seguinte",
+  tags: ["marts"],
+  assertions: {
+    uniqueKey: ["cohort_week", "weeks_since_first_visit"],
+    rowConditions: ["active_users <= cohort_size"]
+  }
+}
+
+-- Só entram usuários com a primeira visita dentro do período (session_number = 1),
+-- para não misturar quem chegou antes de novembro/2020.
+
+WITH first_visit AS (
+  SELECT
+    user_pseudo_id,
+    DATE_TRUNC(MIN(session_date), WEEK(MONDAY)) AS cohort_week
+  FROM ${ref("fct_sessions")}
+  GROUP BY user_pseudo_id
+  HAVING LOGICAL_OR(is_new_user)
+),
+
+activity AS (
+  SELECT DISTINCT
+    f.user_pseudo_id,
+    f.cohort_week,
+    DATE_DIFF(DATE_TRUNC(s.session_date, WEEK(MONDAY)), f.cohort_week, WEEK) AS weeks_since_first_visit
+  FROM first_visit AS f
+  JOIN ${ref("fct_sessions")} AS s USING (user_pseudo_id)
+),
+
+cohort_size AS (
+  SELECT cohort_week, COUNT(*) AS cohort_size
+  FROM first_visit
+  GROUP BY cohort_week
+)
+
+SELECT
+  a.cohort_week,
+  a.weeks_since_first_visit,
+  c.cohort_size,
+  COUNT(DISTINCT a.user_pseudo_id) AS active_users,
+  SAFE_DIVIDE(COUNT(DISTINCT a.user_pseudo_id), c.cohort_size) AS retention_rate
+FROM activity AS a
+JOIN cohort_size AS c USING (cohort_week)
+GROUP BY a.cohort_week, a.weeks_since_first_visit, c.cohort_size

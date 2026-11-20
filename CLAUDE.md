@@ -114,6 +114,10 @@ cabem numa noite.
 - Nada de credencial, chave JSON ou `.env` versionado
 - Autenticação via `gcloud auth application-default login`, não service account
 - Pedir confirmação antes de `git push` ou de qualquer ação que saia da máquina
+- **Divisão de trabalho (desde 20/11/2026):** o Claude constrói o SQL/Dataform (Fases 5 e 6)
+  para o projeto andar rápido; o Dante revisa as PRs e faz o Power BI (Fase 7), que é o dia a
+  dia dele. Toda PR de pipeline traz um **mapa curto** (o que entrou, de onde lê, o que gera,
+  quanto custa), para o Dante não se perder no Dataform.
 - **Fluxo de PR (desde 20/11/2026):** toda mudança vai numa branch e sobe como Pull Request;
   nada de commit direto na `main`. O Claude **faz a própria review do diff antes de subir** e
   registra o resultado na descrição da PR. O **Dante avalia e faz o merge**. Descrição da PR em
@@ -338,8 +342,23 @@ completar o dicionário. Depois: dry run das colunas da staging e o item de limi
   19/01/2027). Consultada no console: 16 eventos em 31/01/2021, `page_view` = 9.498.
 - **Fase 4 concluída.**
 
-**Próximo passo:** Fase 5, `stg_events.sqlx` a partir do rascunho do notebook (18 etiquetas,
-`AS` em tudo, datas pelas `vars`). Apagar a `test_source` quando a `stg_events` existir.
+- Mesmo dia, depois das 19h: o Dante pediu para o Claude construir o SQL (Fases 5 e 6) e ficar
+  com o Power BI. Registrado em *Convenções*.
+- **Fase 5:** `stg_events` (38 colunas, 1,93 GiB) e `stg_items` (19 colunas, 0,84 GiB; sem
+  `ga_session_id` para não ler `event_params`). Sem partição: no sandbox, partição com mais de
+  60 dias expira e apagaria os dados de 2020/2021. `test_source` apagada (arquivo e view).
+- **Fase 6:** `fct_purchases`, `fct_sessions`, `mart_product_daily`, `mart_cohort_weekly` no
+  dataset `marts`, com 8 assertions (todas passam). Canal em `includes/channels.js`.
+  `mart_channel_daily` e `mart_funnel_daily` dispensadas (a `fct_sessions` cobre).
+- Números: 360.129 sessões, 270.154 usuários, 5.372 compras, US$ 340.647, conversão 1,35%.
+- Execução completa: ~4,3 GiB. Armazenamento: ~2,2 GiB. Tabelas expiram em ~19/01/2027.
+- Mapa das tabelas em `docs/camadas.md`; limitações novas no dicionário.
+- Review antes da PR achou e corrigiu: `session_date` em UTC (trocado por `event_date`, o fuso
+  da propriedade) e compras duplicadas inflando a `mart_product_daily` em ~7%. Agora a receita
+  por produto (US$ 340.601) bate com a das compras (US$ 340.647).
+
+**Próximo passo:** Fase 7, Power BI (com o Dante). Conectar às 4 marts em modo Import;
+relacionar `fct_purchases.session_key` → `fct_sessions.session_key`; criar calendário.
 
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:
