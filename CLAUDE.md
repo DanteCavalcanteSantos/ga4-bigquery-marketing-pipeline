@@ -114,6 +114,10 @@ cabem numa noite.
 - Nada de credencial, chave JSON ou `.env` versionado
 - Autenticação via `gcloud auth application-default login`, não service account
 - Pedir confirmação antes de `git push` ou de qualquer ação que saia da máquina
+- **Fluxo de PR (desde 20/11/2026):** toda mudança vai numa branch e sobe como Pull Request;
+  nada de commit direto na `main`. O Claude **faz a própria review do diff antes de subir** e
+  registra o resultado na descrição da PR. O **Dante avalia e faz o merge**. Descrição da PR em
+  português e sem rodapé de atribuição
 
 ## Documentação do projeto
 
@@ -313,10 +317,20 @@ completar o dicionário. Depois: dry run das colunas da staging e o item de limi
   `.df-credentials.json`. O arquivo está no `dataform/.gitignore`.
 - Passo a passo da Fase 4 em `docs/estudos/fase-4-dataform.md`.
 
-**Próximo passo:** declarar a fonte GA4 (`type: "declaration"`, usando as `vars`), rodar o
-primeiro `dataform compile` (grátis) e depois uma view simples com `dataform run`. Conferir
-antes se `dataform.projectConfig.vars` funciona no bloco `config` do `.sqlx`; senão, declarar
-num arquivo `.js`.
+### 20/11/2026 — retomada, fonte declarada
+
+- Três semanas parado (desmotivação). Meta do Dante: terminar e publicar como portfólio.
+- Extensão do VS Code **"Tools for Dataform"** (ashishalex) instalada. A extensão
+  "Dataform" oficial está descontinuada.
+- `definitions/sources/ga4_events.sqlx`: declaração da fonte lendo as `vars` no `config`
+  (funciona, conferido no SQL compilado). Arquivo `.sqlx` vazio compila como "operation":
+  armadilha vista hoje.
+- `definitions/staging/test_source.sqlx`: view de teste (contagem por `event_name` no
+  `end_date`). `compile` e `run --dry-run` OK. **`dataform run` ainda não rodado.**
+- Fluxo de PR adotado (ver *Convenções*).
+
+**Próximo passo:** depois do merge da PR, rodar `dataform run dataform` (cria o dataset
+`staging` e a view, grátis) e consultar a view no console. Depois: Fase 5, `stg_events`.
 
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:
