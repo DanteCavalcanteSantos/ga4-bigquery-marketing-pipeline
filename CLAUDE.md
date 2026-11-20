@@ -329,8 +329,17 @@ completar o dicionário. Depois: dry run das colunas da staging e o item de limi
   `end_date`). `compile` e `run --dry-run` OK. **`dataform run` ainda não rodado.**
 - Fluxo de PR adotado (ver *Convenções*).
 
-**Próximo passo:** depois do merge da PR, rodar `dataform run dataform` (cria o dataset
-`staging` e a view, grátis) e consultar a view no console. Depois: Fase 5, `stg_events`.
+- PR #1 avaliada e mergeada pelo Dante. Dúvida dele sobre o `.df-credentials.json`: com ADC
+  não tem segredo; validar só `projectId`, `location` e que não está versionado.
+- `gcloud auth application-default login` refeito; quota project continua certo.
+- Armadilha: o Dante colou no `.sqlx` o `CREATE OR REPLACE VIEW` que era só explicação.
+  Regra fixada: no `.sqlx` vai só `config` + `SELECT`; o `CREATE` é gerado pelo Dataform.
+- **Primeiro `dataform run`:** dataset `staging` e view `test_source` criados (expira em
+  19/01/2027). Consultada no console: 16 eventos em 31/01/2021, `page_view` = 9.498.
+- **Fase 4 concluída.**
+
+**Próximo passo:** Fase 5, `stg_events.sqlx` a partir do rascunho do notebook (18 etiquetas,
+`AS` em tudo, datas pelas `vars`). Apagar a `test_source` quando a `stg_events` existir.
 
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:
