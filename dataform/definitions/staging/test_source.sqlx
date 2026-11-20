@@ -1,0 +1,11 @@
+config {
+  type: "view",
+  description: "Teste do pipeline: conta eventos de um dia da fonte GA4"
+}
+
+SELECT
+  event_name,
+  COUNT(*) AS events
+FROM ${ref("events_*")}
+WHERE _TABLE_SUFFIX = '${dataform.projectConfig.vars.end_date}'
+GROUP BY event_name
