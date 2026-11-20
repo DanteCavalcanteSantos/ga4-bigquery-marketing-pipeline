@@ -356,9 +356,14 @@ completar o dicionário. Depois: dry run das colunas da staging e o item de limi
 - Review antes da PR achou e corrigiu: `session_date` em UTC (trocado por `event_date`, o fuso
   da propriedade) e compras duplicadas inflando a `mart_product_daily` em ~7%. Agora a receita
   por produto (US$ 340.601) bate com a das compras (US$ 340.647).
+- **PR #3 mergeada pelo Dante** (sem comentários). `main` sincronizada; branch apagada.
+  **Fases 5 e 6 concluídas.**
+- Se as tabelas expirarem (~19/01/2027): `dataform run dataform` recria tudo (~4,3 GiB).
 
-**Próximo passo:** Fase 7, Power BI (com o Dante). Conectar às 4 marts em modo Import;
-relacionar `fct_purchases.session_key` → `fct_sessions.session_key`; criar calendário.
+**Próximo passo:** Fase 7, Power BI (com o Dante). Conectar às 4 marts do dataset `marts`
+em modo Import (conector Google BigQuery, projeto `portfolio-marketing-digital`);
+relacionar `fct_purchases.session_key` → `fct_sessions.session_key`; criar tabela
+calendário ligada a `session_date`; medidas DAX dos KPIs de `docs/perguntas-negocio.md`.
 
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:
