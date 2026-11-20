@@ -1,0 +1,47 @@
+config {
+  type: "table",
+  schema: "marts",
+  description: "Uma linha por compra (pedido), sem disparos duplicados",
+  tags: ["marts"],
+  assertions: {
+    uniqueKey: ["transaction_key"],
+    nonNull: ["transaction_key", "session_key", "purchase_date"],
+    rowConditions: ["revenue IS NULL OR revenue >= 0"]
+  }
+}
+
+-- Duplicatas no dataset:
+--   mesmo transaction_id + mesmo usuário      -> evento disparado 2x: fica só o primeiro
+--   mesmo transaction_id + usuários diferentes -> colisão da ofuscação: compras diferentes
+--   transaction_id vazio ou '(not set)'        -> não dá para deduplicar: cada evento é uma compra
+
+WITH purchases AS (
+  SELECT
+    *,
+    CONCAT(user_pseudo_id, '-', CAST(ga_session_id AS STRING)) AS session_key,
+    CASE
+      WHEN transaction_id IS NULL OR transaction_id = '(not set)'
+        THEN CONCAT('no-id-', user_pseudo_id, '-', CAST(UNIX_MICROS(event_datetime) AS STRING))
+      ELSE CONCAT(transaction_id, '-', user_pseudo_id)
+    END AS transaction_key
+  FROM ${ref("stg_events")}
+  WHERE event_name = 'purchase'
+)
+
+SELECT
+  transaction_key,
+  NULLIF(transaction_id, '(not set)') AS transaction_id,
+  session_key,
+  user_pseudo_id,
+  event_date AS purchase_date,
+  event_datetime AS purchase_datetime,
+  purchase_revenue AS revenue,
+  tax_value,
+  shipping_value,
+  total_item_quantity,
+  currency,
+  payment_type,
+  shipping_tier,
+  coupon
+FROM purchases
+QUALIFY ROW_NUMBER() OVER (PARTITION BY transaction_key ORDER BY event_datetime) = 1

@@ -139,3 +139,14 @@ GA4 de site **não traz impressão de anúncio** (isso vem do Google Ads ou do D
 - **`view_item_list`:** 71 eventos contra 31.007 `select_item`. Não dá para calcular o clique
   em listas.
 - **`traffic_source`:** guarda a origem da primeira visita do usuário, não a da sessão.
+- **Compras duplicadas** (medido na staging em 20/11/2026): 5.692 eventos `purchase` viram
+  **5.372 compras** na `fct_purchases`. Mesmo `transaction_id` + mesmo usuário = disparo
+  duplicado (removido). Mesmo `transaction_id` + usuários diferentes = colisão da ofuscação
+  (mantido). 906 compras sem ID (`(not set)` ou vazio) não podem ser deduplicadas.
+- **Receita vazia:** 450 eventos `purchase` sem `purchase_revenue`.
+- **`session_start` nunca traz `source`/`medium`.** A origem da sessão é o primeiro valor
+  preenchido entre os eventos da visita. 26% das sessões não têm nenhum: canal
+  "Não identificado", somado a `<Other>` e `(data deleted)`.
+- **Autorreferência no canal "Referência":** `googlemerchandisestore.com` aparece como origem
+  de sessões, provavelmente o retorno do checkout. Isso infla a receita de "Referência" e tira
+  crédito do canal original.

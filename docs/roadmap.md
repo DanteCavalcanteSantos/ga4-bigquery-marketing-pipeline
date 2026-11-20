@@ -60,26 +60,26 @@ Definir **o que** o dashboard responde antes de modelar.
 
 Limpar e achatar o dado bruto, sem regra de negócio. Uma linha por evento.
 
-- [ ] Variáveis de período (`start_date`, `end_date`) para filtrar `_TABLE_SUFFIX`
-- [ ] `stg_events`: colunas tipadas, `event_params` extraídos, `event_timestamp` em datetime
-- [ ] `stg_items`: `UNNEST(items)`, uma linha por item por evento
-- [ ] Dry run de cada model antes de rodar
-- [ ] Perfil da `stg_events` (lendo a staging, não a bronze): nulos por coluna, tipos, valores
+- [x] Variáveis de período (`start_date`, `end_date`) para filtrar `_TABLE_SUFFIX`
+- [x] `stg_events`: colunas tipadas, `event_params` extraídos, `event_timestamp` em datetime
+- [x] `stg_items`: `UNNEST(items)`, uma linha por item por evento
+- [x] Dry run de cada model antes de rodar (stg_events 1,93 GiB; stg_items 0,84 GiB)
+- [x] Perfil da `stg_events` (lendo a staging, não a bronze): nulos por coluna, tipos, valores
       fora do padrão e outliers de receita e quantidade
 
 ## Fase 6 — Camada marts
 
 Tabelas prontas para o Power BI, já agregadas.
 
-- [ ] `fct_sessions`: uma linha por sessão (`user_pseudo_id` + `ga_session_id`), com canal,
+- [x] `fct_sessions`: uma linha por sessão (`user_pseudo_id` + `ga_session_id`), com canal,
       dispositivo, país, se converteu e receita
-- [ ] `fct_purchases`: uma linha por transação
-- [ ] `mart_funnel_daily`: etapas do funil por dia e canal
-- [ ] `mart_channel_daily`: sessões, conversões e receita por canal e dia
-- [ ] `mart_product_daily`: visualizações, adições ao carrinho e compras por produto
-- [ ] `mart_cohort`: retenção por coorte de primeira visita
-- [ ] Assertions (testes do Dataform): unicidade, não nulo, receita ≥ 0
-- [ ] Rodar o pipeline inteiro e anotar o custo total de uma execução
+- [x] `fct_purchases`: uma linha por transação
+- [x] ~~`mart_funnel_daily`~~: coberto pela `fct_sessions` (flags `has_*`)
+- [x] ~~`mart_channel_daily`~~: coberto pela `fct_sessions` (evita somar usuários entre dias)
+- [x] `mart_product_daily`: visualizações, adições ao carrinho e compras por produto
+- [x] `mart_cohort_weekly`: retenção por coorte semanal de primeira visita
+- [x] Assertions (testes do Dataform): unicidade, não nulo, receita ≥ 0 (8 testes, todos passam)
+- [x] Rodar o pipeline inteiro e anotar o custo total de uma execução: ~4,3 GiB
 
 ## Fase 7 — Power BI
 

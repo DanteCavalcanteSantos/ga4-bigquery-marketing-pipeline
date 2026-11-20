@@ -1,0 +1,65 @@
+config {
+  type: "table",
+  description: "Uma linha por evento do GA4, com event_params extraídos e colunas tipadas",
+  tags: ["staging"]
+}
+
+SELECT
+  -- Quando
+  PARSE_DATE('%Y%m%d', event_date) AS event_date,
+  TIMESTAMP_MICROS(event_timestamp) AS event_datetime,
+
+  -- O quê e quem
+  event_name AS event_name,
+  user_pseudo_id AS user_pseudo_id,
+  TIMESTAMP_MICROS(user_first_touch_timestamp) AS user_first_touch_datetime,
+
+  -- Sessão
+  (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_id') AS ga_session_id,
+  (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'ga_session_number') AS ga_session_number,
+  (SELECT SAFE_CAST(COALESCE(value.string_value, CAST(value.int_value AS STRING)) AS INT64)
+     FROM UNNEST(event_params) WHERE key = 'session_engaged') AS session_engaged,
+  (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'engagement_time_msec') AS engagement_time_msec,
+  (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'entrances') AS entrances,
+
+  -- Página
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_location') AS page_location,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_title') AS page_title,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'page_referrer') AS page_referrer,
+  (SELECT value.int_value FROM UNNEST(event_params) WHERE key = 'percent_scrolled') AS percent_scrolled,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'search_term') AS search_term,
+
+  -- Origem da sessão (event_params)
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'source') AS session_source,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'medium') AS session_medium,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'campaign') AS session_campaign,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'term') AS session_term,
+
+  -- Origem da primeira visita (traffic_source)
+  traffic_source.source AS first_user_source,
+  traffic_source.medium AS first_user_medium,
+  traffic_source.name AS first_user_campaign,
+
+  -- Dispositivo e local
+  device.category AS device_category,
+  device.operating_system AS operating_system,
+  device.language AS device_language,
+  device.web_info.browser AS browser,
+  geo.country AS country,
+  geo.region AS region,
+  geo.city AS city,
+
+  -- Compra
+  ecommerce.transaction_id AS transaction_id,
+  ecommerce.purchase_revenue AS purchase_revenue,
+  ecommerce.tax_value AS tax_value,
+  ecommerce.shipping_value AS shipping_value,
+  ecommerce.total_item_quantity AS total_item_quantity,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'currency') AS currency,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'payment_type') AS payment_type,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'shipping_tier') AS shipping_tier,
+  (SELECT value.string_value FROM UNNEST(event_params) WHERE key = 'coupon') AS coupon
+
+FROM ${ref("events_*")}
+WHERE _TABLE_SUFFIX BETWEEN '${dataform.projectConfig.vars.start_date}'
+                        AND '${dataform.projectConfig.vars.end_date}'
