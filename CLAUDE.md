@@ -359,6 +359,14 @@ completar o dicionário. Depois: dry run das colunas da staging e o item de limi
 - **PR #3 mergeada pelo Dante** (sem comentários). `main` sincronizada; branch apagada.
   **Fases 5 e 6 concluídas.**
 - Se as tabelas expirarem (~19/01/2027): `dataform run dataform` recria tudo (~4,3 GiB).
+- Dúvida do Dante: como fazer o `SELECT * LIMIT 10` do trabalho sem gastar. Explicado que
+  **`LIMIT` não reduz custo no BigQuery** (a cobrança é por coluna lida). Alternativas grátis:
+  aba **Visualização** (Preview) do console e `client.list_rows("marts.fct_sessions",
+  max_results=10).to_dataframe()` no notebook. Tamanhos (metadados, grátis): `stg_events`
+  1,2 GiB, `stg_items` 865 MiB, `fct_sessions` 87 MiB, `mart_product_daily` 5 MiB,
+  `fct_purchases` 0,9 MiB, `mart_cohort_weekly` ~0. Nas marts, `SELECT *` custa quase nada.
+- Pendente: o Dante abrir a Visualização das 4 marts (começando pela `fct_sessions`, lendo
+  junto com `docs/camadas.md`) para entender a estrutura antes do Power BI.
 
 **Próximo passo:** Fase 7, Power BI (com o Dante). Conectar às 4 marts do dataset `marts`
 em modo Import (conector Google BigQuery, projeto `portfolio-marketing-digital`);
