@@ -356,9 +356,22 @@ completar o dicionário. Depois: dry run das colunas da staging e o item de limi
 - Review antes da PR achou e corrigiu: `session_date` em UTC (trocado por `event_date`, o fuso
   da propriedade) e compras duplicadas inflando a `mart_product_daily` em ~7%. Agora a receita
   por produto (US$ 340.601) bate com a das compras (US$ 340.647).
+- **PR #3 mergeada pelo Dante** (sem comentários). `main` sincronizada; branch apagada.
+  **Fases 5 e 6 concluídas.**
+- Se as tabelas expirarem (~19/01/2027): `dataform run dataform` recria tudo (~4,3 GiB).
+- Dúvida do Dante: como fazer o `SELECT * LIMIT 10` do trabalho sem gastar. Explicado que
+  **`LIMIT` não reduz custo no BigQuery** (a cobrança é por coluna lida). Alternativas grátis:
+  aba **Visualização** (Preview) do console e `client.list_rows("marts.fct_sessions",
+  max_results=10).to_dataframe()` no notebook. Tamanhos (metadados, grátis): `stg_events`
+  1,2 GiB, `stg_items` 865 MiB, `fct_sessions` 87 MiB, `mart_product_daily` 5 MiB,
+  `fct_purchases` 0,9 MiB, `mart_cohort_weekly` ~0. Nas marts, `SELECT *` custa quase nada.
+- Pendente: o Dante abrir a Visualização das 4 marts (começando pela `fct_sessions`, lendo
+  junto com `docs/camadas.md`) para entender a estrutura antes do Power BI.
 
-**Próximo passo:** Fase 7, Power BI (com o Dante). Conectar às 4 marts em modo Import;
-relacionar `fct_purchases.session_key` → `fct_sessions.session_key`; criar calendário.
+**Próximo passo:** Fase 7, Power BI (com o Dante). Conectar às 4 marts do dataset `marts`
+em modo Import (conector Google BigQuery, projeto `portfolio-marketing-digital`);
+relacionar `fct_purchases.session_key` → `fct_sessions.session_key`; criar tabela
+calendário ligada a `session_date`; medidas DAX dos KPIs de `docs/perguntas-negocio.md`.
 
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:
