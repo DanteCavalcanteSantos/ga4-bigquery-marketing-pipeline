@@ -83,7 +83,7 @@ Tabelas prontas para o Power BI, já agregadas.
 
 ## Fase 7 — Power BI
 
-- [ ] Conectar às marts em modo Import (nunca na `events_*`)
+- [ ] Conectar às marts em modo Import (nunca na `events_*`) — `fct_sessions` conectada (22/11); faltam as outras 3
 - [ ] Modelo estrela: fatos + dimensão calendário + dimensões de canal, produto e país
 - [ ] Medidas DAX dos KPIs da Fase 3
 - [ ] Página 1: visão geral (KPIs e tendência)

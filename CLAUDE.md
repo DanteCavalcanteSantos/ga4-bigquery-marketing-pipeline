@@ -373,6 +373,42 @@ em modo Import (conector Google BigQuery, projeto `portfolio-marketing-digital`)
 relacionar `fct_purchases.session_key` → `fct_sessions.session_key`; criar tabela
 calendário ligada a `session_date`; medidas DAX dos KPIs de `docs/perguntas-negocio.md`.
 
+### 22/11/2026 — Fase 7 começa: primeira tabela no Power BI
+
+- PR #4 (registro do dia 20) aberta e mergeada pelo Dante.
+- Explicada a `fct_sessions` em 5 blocos (quem/quando, origem, dispositivo, comportamento e
+  funil, receita) e o papel dos datasets: `staging` (prata), `marts` (ouro, a única que o Power
+  BI lê) e `assertions` (views de teste; vazio = passou).
+- Plugins: o Dante conectou o **conector Google Cloud BigQuery** no Claude (ainda não carregou
+  na sessão do VS Code). Regra: o Claude usa só as ferramentas de leitura, estima o custo antes
+  e só lê a `marts`. DAX Studio e Tabular Editor 2 são programas do Windows (não plugins do
+  Claude), para quando chegarem as medidas DAX.
+- Review da primeira query do Dante: `has_add_cart` não existe (`has_add_to_cart`);
+  `DISTINCT` desnecessário (tabela já é única por sessão, garantido pelo teste); `DISTINCT` +
+  `ORDER BY` em coluna renomeada dá erro; faltava `session_key` (ponte com a
+  `fct_purchases`), as 4 etapas do funil, `is_new_user` e `country`; `tempo_de_pagina` era nome
+  enganoso (é o tempo engajado da sessão).
+- Campanhas: **fora do dashboard.** Campanha real (Data Share Promo, NewYear, Holiday,
+  BlackFriday) é ~1.500 sessões (0,4%) e ~US$ 1,7 mil; o resto é `(organic)`, `(referral)`,
+  `(direct)`, `(not set)`, `<Other>` e `(data deleted)`. Citar como limitação no README.
+- Acrescentadas `origem` e `midia` para abrir o canal no detalhe (mostrar a autorreferência da
+  loja dentro de "Referência").
+- Conector do Power BI: Projeto de Cobrança e ID do Projeto = `portfolio-marketing-digital`;
+  API de Armazenamento vazia (se der erro de Storage API, usar `false`). Usada a **Instrução
+  SQL** (versionada em `Dashboards/queries/fct_sessions.sql`); os apelidos em português vão
+  para o Dataform depois, e o Power BI passa a só importar.
+- A prévia do conector mostrou só `(data deleted)` em `origem`/`midia`: é amostra das primeiras
+  linhas, não falta de dado (na tabela: organic 103 mil, referral 84 mil etc.). ~7% das sessões
+  têm `pageviews = 0` (só outros eventos): comportamento do GA4, não erro.
+- Arquivo salvo em `Dashboards/Dashboard_Marketing_Digital.pbix` (pasta escolhida pelo Dante;
+  o `.pbip` foi sugerido, mas ficou `.pbix`). **Com 20 KB, o arquivo parece não ter os dados
+  carregados:** conferir se o "Carregar" terminou antes de salvar.
+
+**Próximo passo:** abrir o `.pbix`, confirmar que a `fct_sessions` carregou e validar os
+totais (360.129 sessões, 270.154 usuários, conversão 1,35%) e a contagem por `midia`. Depois:
+importar `fct_purchases`, `mart_product_daily` e `mart_cohort_weekly`, relação por
+`session_key` e tabela calendário.
+
 ### (antigo) Próximo passo de 08–11/10: criar o venv e instalar os pacotes. O Dante ainda não rodou nenhum
 destes comandos:
 
